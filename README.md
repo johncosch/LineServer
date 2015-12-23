@@ -17,7 +17,7 @@
 * Run the run.sh script with the absolute path of the file you wish to serve.
 
 ```
-	$ bash run.sh "absolute/path/to/file.txt"
+	$ bash run.sh "/absolute/path/to/file.txt"
 ```
 
 * Request a line number (starting at 1) from the local instance of your LineServer.
