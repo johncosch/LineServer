@@ -2,25 +2,25 @@
 
 ### How to use
 
-1. Clone this repo.
+* Clone this repo.
 
 ```
 	$ git clone github.com	
 ```
 
-2. Run the build.sh script to bring in the necessary dependencies.
+* Run the build.sh script to bring in the necessary dependencies.
 
 ```
 	$ bash build.sh
 ```
 
-3. Run the run.sh script with the absolute path of the file you wish to serve.
+* Run the run.sh script with the absolute path of the file you wish to serve.
 
 ```
 	$ bash run.sh "absolute/path/to/file.txt"
 ```
 
-4. Request a line number (starting at 1) from the local instance of your LineServer.
+* Request a line number (starting at 1) from the local instance of your LineServer.
 
 ```
 	$ curl http://localhost:9292/lines/<line number>
@@ -36,7 +36,7 @@ A valid response should look like this:
 
 When I first read through this project, I immediately thought about just dumping the contents of a file in some in memory indexed set like an array or dictionary. This would lead to constant time access, however for really big files it could pretty easily consume all of the systems memory. It was clear at that point that I needed some kind of persistence. I also really wanted to avoid database dependencies. Here’s what I came up with:
 
-Pre-processing
+**Pre-processing**
 
 The system starts by saving name of the file in an environment variable, which is then passed to a FileProcessor object when our Sinatra instance starts up.
 
@@ -46,7 +46,7 @@ Each of these chunks is then associated with a Chunk object, which holds referen
 
 Chunk objects are then placed in an array in a singleton object called ChunkedFile (I know I'm not a big singleton fan either but it worked here).
 
-Request
+**Request**
 
 When a request is made to /lines/:line_number it is handled by a Sinatra route in the Api class.
 
@@ -62,7 +62,7 @@ I wasn't really able to test with anything larger than a 738MB file because my c
 
 Below is a graph of the results from my performance test:
 
-![Performance Graph](https://github.com/johncosch/LineServer/complexity_chart.png)
+![Performance Graph](https://github.com/johncosch/LineServer/blob/master/complexity_chart.png)
 
 These results are pretty in-line with my assumptions. The request phase should execute in about logarithmic time. There are two important steps here. The first is the binary search, which executes in O(log(n/m)) time, where n is the total number of lines and m is the number of lines in the temp file. The second is streaming through the temp file for the correct line, which executes in constant time bounded above by the number of lines in the file or m. In our case this was 1000. Total execution time is then about O(log(n)).
 
@@ -88,19 +88,19 @@ The first few helped me think about the best approach for managing memory and ch
 
 I intentionally kept the dependencies at a minimum, but the tools I did utilize are:
 
-Sinatra / Sinatra-contrib:
+**Sinatra / Sinatra-contrib:**
 I used Sinatra to serve as my web framework. I did this because the scope of the project did not require something more robust like Rails. It allowed me to keep the the project simple, and totally modular.
 
-Puma: 
+**Puma:** 
 I used Puma as my app server. Honestly Puma was a given because the Salsify team uses it in production. I have used it in the past, and loved the power and simplicity of it, so there's a good chance I would have went with it again even if I didn't know what Salsify used.  
 
-Rspec: 
+**Rspec:** 
 The best test suite around. How could I live without it?
 
-Rack-test:
+**Rack-test:**
 Used for integration testing with Sinatra.
 
-Ruby-Prof:
+**Ruby-Prof:**
 A simple to use profiler for ruby, which allowed me to check that my algorithm was functioning correctly.
 
 ### How long did you spend on this exercise? If you had unlimited more time to spend on this, how would you spend it and how would you prioritize each item?
