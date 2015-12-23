@@ -8,7 +8,7 @@
 	$ git clone github.com	
 ```
 
-2. Run the build.sh script to bring in the neccessisary dependencies.
+2. Run the build.sh script to bring in the necessary dependencies.
 
 ```
 	$ bash build.sh
@@ -34,17 +34,17 @@ A valid response should look like this:
 
 ### How does your system work?
 
-When I first read through this project, I immediatly thought about just dumping the contents of a file in some in memory indexed set like an array or dictionary. This would lead to constant time access, however for really big files it could pretty easily consume all of the systems memory. It was clear at that point that I needed some kind of persistance. I also really wanted to avoid database dependencies. Heres what I came up with:
+When I first read through this project, I immediately thought about just dumping the contents of a file in some in memory indexed set like an array or dictionary. This would lead to constant time access, however for really big files it could pretty easily consume all of the systems memory. It was clear at that point that I needed some kind of persistence. I also really wanted to avoid database dependencies. Here’s what I came up with:
 
 Pre-processing
 
-The system starts by saving name of the file in an environment variable, which is then passed to a FileProcessor instance when our Sinatra instance starts up.
+The system starts by saving name of the file in an environment variable, which is then passed to a FileProcessor object when our Sinatra instance starts up.
 
 The FileProcessor performs the important pre-processing step of streaming the file into chunks (temp files) that each have a capacity of some specified number of lines. I found 1000 worked pretty well, but it could easily be changed to better fit the average file size of your use case.
 
-Each of these chunks is then assocated with a Chunk object, which holds reference to the temp file, the starting line number containted in the chunk, and the ending line number contained in the chunk.
+Each of these chunks is then associated with a Chunk object, which holds reference to the temp file, the starting line number contained in the chunk, and the ending line number contained in the chunk.
 
-Chunk objects are then placed in a singleton object called ChunkedFile (I know I'm not a big singleton fan either but it worked here).
+Chunk objects are then placed in an array in a singleton object called ChunkedFile (I know I'm not a big singleton fan either but it worked here).
 
 Request
 
@@ -52,17 +52,19 @@ When a request is made to /lines/:line_number it is handled by a Sinatra route i
 
 The request then asks our singleton ChunkedFile object, which has maintained a count of the total lines in the file, if the line exists in the file. If it doesn't we just return a 413 status.
 
-If the line does exist then the api tells our ChunkedFile object to binary search through all of the chunk objects and return the one that contains our line. Each Chunk contains the bounds of it's own temp file so no IO is required at this step.
+If the line does exist then the Api tells our ChunkedFile object to binary search through all of the Chunk objects and return the one that contains our line. Each Chunk contains the bounds of it's own temp file so no IO is required at this step.
 
-Once the chunk is returned we re-open and stream through the chunks tempfile to find our line and return it with a 200 status.
+Once the chunk is returned we re-open and stream through the chunks temp file to find our line and return it with a 200 status.
 
 ### How will your system perform with a 1 GB file? a 10 GB file? a 100 GB file?
 
 I wasn't really able to test with anything larger than a 738MB file because my computers disk is almost at capacity, but judging by the results it's pretty clear how the system would perform. 
 
-Below is a graph of the results from my perfomance test.
+Below is a graph of the results from my performance test:
 
-These results are pretty in-line with my assumptions. The request phase should execute in about logrithmic time. There are two important steps here. The first is the binary search, which executes in O(log(n/m)) time, where n is the total number of lines and m is the number of lines in the tempfile. The second is streaming through the temp file for the correct line, which executes in constant time bounded above by the number of lines in the file or m. In our case this was 1000. Total execution time is then about O(log(n)).
+![Performance Graph](https://github.com/johncosch/LineServer/complexity_chart.png)
+
+These results are pretty in-line with my assumptions. The request phase should execute in about logarithmic time. There are two important steps here. The first is the binary search, which executes in O(log(n/m)) time, where n is the total number of lines and m is the number of lines in the temp file. The second is streaming through the temp file for the correct line, which executes in constant time bounded above by the number of lines in the file or m. In our case this was 1000. Total execution time is then about O(log(n)).
 
 Another important thing to consider with this implementation is that all IO is streamed which should conserve a significant amount of memory, and allow you to work with large files, or long lines without putting a strain on your system. 
 
@@ -70,7 +72,7 @@ The main resource used here is disk space, which is typically in much greater su
 
 ### How will your system perform with 100 users? 10000 users? 1000000 users?
 
-The system should perform well under most of these conditions. I didn't really load test the system much but, but based on the reasons above it should be pretty performant. My focus on memory utilization and the fact that only one line is allocated to memory at a time should allow for a large number of users to use the system at one time. 
+The system should perform well under most of these conditions. I didn't really load test the system much but, but based on the reasons above it should be pretty performant. My focus on memory utilization and the fact that only one line is allocated to memory at a time should allow for a large number of users on the system at one time. 
 
 ### What documentation, websites, papers, etc did you consult in doing this assignment?
 
@@ -80,7 +82,7 @@ The system should perform well under most of these conditions. I didn't really l
 - [Ruby Docs](http://ruby-doc.org/)
 - [Sinatra Docs](http://www.sinatrarb.com/)
 
-The first few helped me think about the best approach for managing memory and chunking the file.
+The first few helped me think about the best approach for managing memory and chunking the file. 
 
 ### What third-party libraries or other tools does the system use? How did you choose each library or framework you used?
 
@@ -103,11 +105,11 @@ A simple to use profiler for ruby, which allowed me to check that my algorithm w
 
 ### How long did you spend on this exercise? If you had unlimited more time to spend on this, how would you spend it and how would you prioritize each item?
 
-I did the project somewhat sparatically over a period of a few days. All in all I would say writing, refactoring, performance testing, and packaging took me about 12 - 14 hours plus maybe another hour thinking about the problem. 
+I did the project somewhat sporadically over a period of a few days. All in all I would say writing, refactoring, performance testing, and packaging took me about 12 - 14 hours plus maybe another hour thinking about the problem. 
 
-The first thing I would do is more performance and load testing. I would have to deploy to a remote server to do this though, which is why it hasnt been done yet (my computer's a wimp).
+The first thing I would do is more performance and load testing. I would have to deploy to a remote server to test with large files, which is why it hasn't been done yet (my computer's a wimp).
 
-The next thing I would do is look more closely at the performance of temp files. I suspect I could enhance upload time by using regular files rather than temp files by avoiding potential name collisions. Also, tempfiles are removed on reboot which could potentially lead to some errors. 
+The next thing I would do is look more closely at the performance of temp files. I suspect I could enhance upload time by using regular files rather than temp files by avoiding potential name collisions. Also, temp files are removed on reboot which could potentially lead to some errors. 
 
 Aside from that there is a lot of error handling and general clean up that needs to be done still. 
 
