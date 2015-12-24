@@ -5,7 +5,7 @@
 * Clone this repo.
 
 ```
-	$ git clone github.com	
+	$ git clone git@github.com:johncosch/LineServer.git	
 ```
 
 * Run the build.sh script to bring in the necessary dependencies.
