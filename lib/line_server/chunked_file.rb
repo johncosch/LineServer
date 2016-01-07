@@ -20,9 +20,11 @@ module LineServer
 		end
 
 		def search_chunks(line_number)
-			chunks.bsearch do |x|
-				x.compare_line line_number
+			chunk_index = lower_bound(line_number)
+			if line_number < chunks[chunk_index].starting_line
+				chunk_index -= 1
 			end
+			chunks[chunk_index]
 		end
 
 		def empty?
@@ -34,6 +36,11 @@ module LineServer
 		end
 
 		private
+
+		def lower_bound(line_number)
+			chunk_size = LineServer::FileProcessor::CHUNK_LIMIT
+			(line_number / chunk_size).floor
+		end
 
 		def count
 			@line_count ||= 0

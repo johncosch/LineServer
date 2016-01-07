@@ -22,6 +22,15 @@ describe LineServer::Api do
     	expect(body[:line]).to eq(file_lines[valid_line_number - 1])
 		end
 
+		it "will return the specified line number" do
+			line_number = 1000
+			full_url = url + line_number.to_s
+			get full_url, nil
+    	expect(last_response.status).to eq(200)
+    	body = json(last_response.body)
+    	expect(body[:line]).to eq(file_lines[line_number - 1])
+		end
+
 		it "will return a 413 status if line is out of bounds" do
 			line_number = file_lines.count + 10
 			full_url = url + line_number.to_s
