@@ -3,7 +3,7 @@
 if [ -f "$1" ]
 then
 	export LINE_SERVER_FILE="$1"
-	rackup
+	puma -C config/puma.rb
 else
     echo "A valid file is required."
 fi

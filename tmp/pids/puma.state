@@ -1,0 +1,26 @@
+---
+pid: 2438
+config: !ruby/object:Puma::Configuration
+  cli_options: 
+  conf: 
+  options:
+    :min_threads: 0
+    :max_threads: 16
+    :quiet: false
+    :debug: false
+    :binds:
+    - unix:///tmp/puma.pumatra.sock
+    :workers: 0
+    :daemon: false
+    :mode: :http
+    :before_fork: []
+    :worker_timeout: 60
+    :worker_boot_timeout: 60
+    :worker_shutdown_timeout: 30
+    :pidfile: "/Users/johncosch/Desktop/Developer/web/LineServer/tmp/pids/puma.pid"
+    :rackup: "/Users/johncosch/Desktop/Developer/web/LineServer/config.ru"
+    :state: "/Users/johncosch/Desktop/Developer/web/LineServer/tmp/pids/puma.state"
+    :config_file: config/puma.rb
+    :control_auth_token: 47a350229bc8ad512b296979848480
+    :tag: LineServer
+    :environment: development

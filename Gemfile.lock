@@ -3,7 +3,10 @@ GEM
   specs:
     backports (3.6.7)
     diff-lcs (1.2.5)
+    ffi (1.9.10)
     multi_json (1.11.2)
+    process_shared (0.2.1)
+      ffi (~> 1.0)
     puma (2.15.3)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -41,6 +44,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  process_shared
   puma (~> 2.15.3)
   rack-test
   rspec (~> 3.4.0)

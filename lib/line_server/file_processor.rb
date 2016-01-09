@@ -19,12 +19,13 @@ module LineServer
 				@chunked_file.add_chunk chunk_from_io(io)
 			end while @finished_processing == false
 			io.close
+			ChunkedFile.instance
 		end
 
 		private
 
 		def clear_chunked_file
-				@chunked_file.delete_chunks if !@chunked_file.empty?
+			@chunked_file.delete_chunks if !@chunked_file.empty?
 		end
 
 		def chunk_from_io(io) 
@@ -43,7 +44,7 @@ module LineServer
 			@current_line += line_count
 			tempfile.close
 			ending_line = @current_line
-			return Chunk.new(tempfile, starting_line, ending_line)
+			Chunk.new(tempfile, starting_line, ending_line)
 		end
 
 	end

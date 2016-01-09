@@ -29,6 +29,14 @@ module LineServer
 			 chunks.size == 0 
 		end
 
+		def set_chunks(chunks_arry)
+			@chunks = chunks_arry
+		end
+
+		def set_line_count(count)
+			@line_count = count
+		end
+
 		def chunks
 			@chunks ||= []
 		end
