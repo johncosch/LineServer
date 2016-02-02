@@ -29,7 +29,7 @@
 A valid response should look like this:
 
 ```
-	{"line":"What an awesome LineServer implementation! We should totally hire him!\n"}
+	{"line":"What an awesome LineServer implementation!\n"}
 ```
 
 ### How does your system work?
@@ -92,7 +92,7 @@ I intentionally kept the dependencies at a minimum, but the tools I did utilize 
 I used Sinatra to serve as my web framework. I did this because the scope of the project did not require something more robust like Rails. It allowed me to keep the the project simple, and totally modular.
 
 **Puma:** 
-I used Puma as my app server. Honestly Puma was a given because the Salsify team uses it in production. I have used it in the past, and loved the power and simplicity of it, so there's a good chance I would have went with it again even if I didn't know what Salsify used.  
+I used Puma as my app server. I chose puma because of its strength in parallelism. 
 
 **Rspec:** 
 The best test suite around. How could I live without it?

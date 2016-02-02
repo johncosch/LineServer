@@ -8,9 +8,9 @@ module LineServer
 			@temp_file, @starting_line, @ending_line = args
 		end
 
-	  	def contains_line?(line_number)
-	  		(@starting_line <= line_number) && (line_number <= @ending_line)
-	  	end
+  	def contains_line?(line_number)
+  		(@starting_line <= line_number) && (line_number <= @ending_line)
+  	end
 
 		def unlink
 			if @temp_file
@@ -31,15 +31,15 @@ module LineServer
 		def get_line(line_number)
 			raise "Line not in chunk" if !contains_line? line_number
 
-			stream = IO.sysopen @temp_file.path
-			io = IO.new stream
-
 			line_content = nil
 			line_position = line_number - starting_line 
-			(0..line_position).each do  
-				line_content = io.gets
+
+			File.open(@temp_file.path) do |io|
+				(0..line_position).each do  
+					line_content = io.gets
+				end
 			end
-			io.close
+
 			line_content
 		end
 

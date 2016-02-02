@@ -13,12 +13,12 @@ module LineServer
 
 		def process
 			clear_chunked_file
-			stream = IO.sysopen @file_location
-			io = IO.new stream
-			begin
-				@chunked_file.add_chunk chunk_from_io(io)
-			end while @finished_processing == false
-			io.close
+
+			File.open(@file_location) do |io|
+				begin
+					@chunked_file.add_chunk chunk_from_io(io)
+				end while @finished_processing == false
+			end
 		end
 
 		private
@@ -32,18 +32,21 @@ module LineServer
 			starting_line = @current_line
 			line_count = 0
 			begin
-				line = io.gets
-				if line == nil && io.eof? 
-					@finished_processing = true
-				else
-					tempfile.write(line)
-					line_count += 1
-				end
-			end while (line_count <= CHUNK_LIMIT) && (@finished_processing == false)
+				begin
+					line = io.gets
+					if io.eof? 
+						@finished_processing = true
+					else
+						tempfile.write(line)
+						line_count += 1
+					end
+				end while (line_count <= CHUNK_LIMIT) && (@finished_processing == false)
+			ensure
+				tempfile.close
+			end
 			@current_line += line_count
-			tempfile.close
 			ending_line = @current_line
-			return Chunk.new(tempfile, starting_line, ending_line)
+			Chunk.new(tempfile, starting_line, ending_line)
 		end
 
 	end
