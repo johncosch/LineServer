@@ -16,7 +16,7 @@ module LineServer
 
 			File.open(@file_location) do |io|
 				begin
-					@chunked_file.add_chunk chunk_from_io(io)
+					@chunked_file.add_chunk build_chunk_from_io(io)
 				end while @finished_processing == false
 			end
 		end
@@ -27,26 +27,31 @@ module LineServer
 				@chunked_file.delete_chunks if !@chunked_file.empty?
 		end
 
-		def chunk_from_io(io) 
+		def build_chunk_from_io(io) 
 			tempfile = Tempfile.new(@file_location.basename.to_s + @current_line.to_s)
 			starting_line = @current_line
 			line_count = 0
 			begin
-				begin
-					line = io.gets
-					if io.eof? 
-						@finished_processing = true
-					else
-						tempfile.write(line)
-						line_count += 1
-					end
-				end while (line_count <= CHUNK_LIMIT) && (@finished_processing == false)
+				write_stream_to_chunk(io, tempfile)
 			ensure
 				tempfile.close
 			end
-			@current_line += line_count
 			ending_line = @current_line
 			Chunk.new(tempfile, starting_line, ending_line)
+		end
+
+		def write_stream_to_chunk(io, tempfile)
+			line_count = 0
+			begin
+				if io.eof? 
+					@finished_processing = true
+				else
+					line = io.gets
+					tempfile.write(line)
+					line_count += 1
+				end
+			end while (line_count <= CHUNK_LIMIT) && (@finished_processing == false)
+			@current_line += line_count
 		end
 
 	end

@@ -8,7 +8,7 @@ describe LineServer::ChunkedFile do
 
 	describe "#search_chunks" do 
 		it "will return the chunk that contains the specified line" do
-			add_mock_chunks
+			add_chunks
 			search_results = chunked_file.search_chunks(657)
 			expect(search_results.contains_line?(657)).to eq(true)
 		end
@@ -16,7 +16,7 @@ describe LineServer::ChunkedFile do
 
 	describe "line_count" do 
 		it "will return the total size of the chunked file" do
-			add_mock_chunks
+			add_chunks
 			expect(chunked_file.line_count).to eq(chunk_freq * chunk_size)
 		end
 	end
@@ -25,7 +25,7 @@ describe LineServer::ChunkedFile do
     	chunked_file.delete_chunks
 	end
 
-	def add_mock_chunks
+	def add_chunks
 		line_number = 0
 		(1..chunk_freq).each do
 			line_number += 1

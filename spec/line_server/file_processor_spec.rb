@@ -14,10 +14,10 @@ describe LineServer::FileProcessor do
 	end
 
 	after(:each) do
-    	LineServer::ChunkedFile.instance.delete_chunks
-  	end
+  	LineServer::ChunkedFile.instance.delete_chunks
+	end
 
-  	def get_file_lines
+	def get_file_lines
 		IO.readlines(file_name)
 	end
 
